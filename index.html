@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>College Collection</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
+<style>
+*{box-sizing:border-box}body{margin:0}
+/* Layout: navy header bar over a responsive grid of bordered school cards, matching the Collect Them All checklist */
+:root{
+  --bg:#edf0fb; --card:#ffffff; --navy:#1d2757; --navy-ink:#ffffff; --fg:#000000; --muted:#5b6389; --line:#1d2757; --soft:#e4e8f8;
+  --award:#e5484d; --scholar:#2f6fe4; --instate:#1f9d63; --aid:#f2b01e;
+  --warn:#c2410c; --ok:#15803d; --wait:#5b6389;
+  --font-d:'Fredoka','Trebuchet MS',system-ui,sans-serif; --font-b:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1330; --card:#182049; --navy:#2a3680; --navy-ink:#ffffff; --fg:#ffffff; --muted:#a6b0e0; --line:#5967c9; --soft:#232d66;
+  --award:#ff6b70; --scholar:#6b9bff; --instate:#3ecf8e; --aid:#ffc83d; --warn:#ff9a5c; --ok:#4ade80; --wait:#a6b0e0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1330; --card:#182049; --navy:#2a3680; --navy-ink:#ffffff; --fg:#ffffff; --muted:#a6b0e0; --line:#5967c9; --soft:#232d66;
+  --award:#ff6b70; --scholar:#6b9bff; --instate:#3ecf8e; --aid:#ffc83d; --warn:#ff9a5c; --ok:#4ade80; --wait:#a6b0e0; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-b);font-weight:500;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header.bar{background:var(--navy);color:var(--navy-ink);border:3px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+header.bar h1{font-family:var(--font-d);font-weight:700;font-size:clamp(24px,4vw,34px);letter-spacing:.02em;margin:0;text-wrap:balance}
+header.bar p{margin:4px 0 0;font-size:13px;opacity:.85}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.14);border-radius:12px;padding:6px 12px;text-align:center;min-width:72px}
+.stat b{display:block;font-family:var(--font-d);font-size:20px;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.tools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.legend,.filters{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px;font-weight:700}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.chip{border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:5px 13px;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--navy);color:var(--navy-ink)}
+select.chip{padding-right:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.card{position:relative;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:14px 14px 14px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:0 4px 0 var(--line)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ibtn{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:var(--soft);color:var(--navy);font:800 15px/1 var(--font-d);font-style:italic;cursor:pointer;display:grid;place-items:center;flex:none}
+:root .ibtn{color:var(--fg)}
+.ibtn:focus-visible,.chip:focus-visible,.edit:focus-visible,button:focus-visible{outline:3px solid var(--scholar);outline-offset:2px}
+.num{background:var(--navy);color:var(--navy-ink);font-family:var(--font-d);font-size:12px;border-radius:999px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.pop{position:absolute;z-index:5;left:10px;top:48px;right:10px;background:var(--card);border:3px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:13px;display:grid;gap:6px}
+.pop dt{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:800}
+.pop dd{margin:0 0 4px;font-weight:700}
+.logo{height:84px;border-radius:12px;background:var(--soft);display:grid;place-items:center;overflow:hidden}
+.logo img{max-height:68px;max-width:80%;object-fit:contain}
+.logo img{max-width:82%;max-height:68px;object-fit:contain}.tlogo img{max-width:88%;max-height:26px;object-fit:contain}
+.mono{font-family:var(--font-d);font-weight:700;font-size:30px;letter-spacing:.04em;color:var(--navy)}
+:root .mono{color:var(--fg)}
+.name{font-family:var(--font-d);font-weight:600;font-size:18px;line-height:1.2;margin:0;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;font-weight:800}
+.pill{border-radius:999px;padding:2px 10px;border:2px solid currentColor;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.pill.admitted{color:var(--ok)} .pill.waiting{color:var(--wait)} .pill.needs{color:var(--warn)}
+.st{color:var(--muted)}
+.badges{display:flex;gap:6px;min-height:26px;align-items:center}
+.dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+.dot svg{width:14px;height:14px}
+.dot.award{background:var(--award)} .dot.scholarship{background:var(--scholar)} .dot.instate{background:var(--instate)} .dot.aid{background:var(--aid);color:#3b2a00}
+.price{margin-top:auto;border-top:2px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:5px;font-variant-numeric:tabular-nums}
+.was{font-size:20px;font-weight:800}
+.was.cut{text-decoration:line-through;color:var(--muted);opacity:.7;font-size:17px}
+.line{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800}
+.line .dot{width:16px;height:16px}.line .dot svg{width:10px;height:10px}
+.line .l{flex:1;min-width:0}.line .a{color:var(--fg)}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--fg);padding-top:6px;margin-top:2px}
+.total b{font-family:var(--font-d);font-size:26px;color:var(--fg)}
+.total small{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.yr{font-size:11px;color:var(--muted);font-weight:700}
+.edit{position:absolute;right:10px;bottom:10px;display:none}
+.editing .card{cursor:pointer}
+.editing .card::after{content:"Tap to edit";position:absolute;right:12px;top:48px;font-size:11px;font-weight:800;color:var(--scholar)}
+.hint{font-size:12px;color:var(--muted);font-weight:700}
+dialog{border:3px solid var(--line);border-radius:18px;background:var(--card);color:var(--fg);padding:0;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
+dialog::backdrop{background:rgba(10,14,40,.6)}
+.dlg{padding:18px;display:grid;gap:12px;font-size:14px}
+.dlg h2{margin:0;font-family:var(--font-d);font-size:22px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f label{display:grid;gap:4px;font-weight:800;font-size:12px;letter-spacing:.03em}
+.f .full{grid-column:1/-1}
+.f input,.f select,.f textarea{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:10px;padding:7px 9px;background:var(--bg);color:var(--fg);min-width:0}
+.rowbtn{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.btn{border:2px solid var(--line);background:var(--navy);color:var(--navy-ink);border-radius:999px;padding:8px 18px;font:800 14px var(--font-b);cursor:pointer}
+.btn.alt{background:var(--card);color:var(--fg)}
+.empty{padding:30px;text-align:center;font-weight:800;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:3px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line)}
+table.sheet{border-collapse:collapse;width:100%;min-width:860px;font-variant-numeric:tabular-nums;font-size:14px}
+.sheet th{position:sticky;top:0;background:var(--navy);color:var(--navy-ink);text-align:left;font-family:var(--font-d);font-weight:600;font-size:13px;letter-spacing:.04em;padding:10px 12px;white-space:nowrap}
+.sheet th.r,.sheet td.r{text-align:right}
+.sheet td{padding:8px 12px;border-top:1px solid var(--soft);vertical-align:middle}
+.sheet tbody tr:nth-child(even){background:var(--soft)}
+.sheet .sc{display:flex;align-items:center;gap:10px;min-width:210px;font-weight:800}
+.tlogo{width:48px;height:34px;border-radius:8px;background:var(--card);border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;flex:none}
+.tlogo img{max-width:90%;max-height:90%;object-fit:contain}
+.tlogo b{font-family:var(--font-d);font-size:11px;color:var(--fg)}
+.pc{display:inline-flex;align-items:center;gap:6px;font-weight:800;justify-content:flex-end}
+.pc .dot{width:16px;height:16px}.pc .dot svg{width:10px;height:10px}
+.none{color:var(--muted);opacity:.6}
+.sheet td.was2{color:var(--muted);text-decoration:none}
+.sheet td.was2.cut{text-decoration:line-through;opacity:.7}
+.sheet td.pay{font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--fg)}
+.editing .sheet tbody tr{cursor:pointer}
+@media (max-width:520px){.f{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.card{transition:transform .12s}.card:hover{transform:translateY(-2px)}}
+</style>
+</head><body>
+
+<div class="wrap" id="app">
+  <header class="bar">
+    <div>
+      <h1>COLLECT THEM ALL</h1>
+      <p>Henry's college collection · annual tuition only, before room, board and fees</p>
+    </div>
+    <div class="stats" id="stats" aria-live="polite"></div>
+  </header>
+  <div class="tools">
+    <div class="legend" aria-label="Legend">
+      <span><i class="dot award"></i>Award</span>
+      <span><i class="dot scholarship"></i>Scholarship</span>
+      <span><i class="dot instate"></i>In-state tuition</span>
+      <span><i class="dot aid"></i>Financial aid</span>
+    </div>
+    <div class="filters">
+      <button class="chip" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" data-f="admitted" aria-pressed="false">Admitted</button>
+      <button class="chip" data-f="perks" aria-pressed="false">Has perks</button>
+      <label class="sr" for="sort" style="position:absolute;left:-9999px">Sort</label>
+      <select class="chip" id="sort"><option value="name">Sort: A to Z</option><option value="net">Sort: lowest net price</option></select>
+      <button class="chip" data-v="cards" aria-pressed="true">Cards</button>
+      <button class="chip" data-v="table" aria-pressed="false">Spreadsheet</button>
+      <button class="chip" id="editToggle" hidden aria-pressed="false">Edit mode</button>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="tablewrap" id="tbl" hidden></div>
+  <p class="hint" id="foot">Prices are published sticker tuition for 2026-27 unless a card says otherwise. Public schools show the out-of-state price, and the green in-state discount is what Indiana residency takes off.</p>
+</div>
+
+<dialog id="dlg"><form method="dialog" class="dlg" id="form">
+  <h2 id="dTitle">School</h2>
+  <div class="f">
+    <label>Tuition per year ($)<input id="e_base" type="number" min="0" step="1"></label>
+    <label>Status<select id="e_status"><option value="admitted">Admitted</option><option value="waiting">Waiting</option><option value="needs">Needs item</option></select></label>
+    <label>Award ($/yr)<input id="e_award" type="number" min="0" step="1"></label>
+    <label>Scholarship ($/yr)<input id="e_scholarship" type="number" min="0" step="1"></label>
+    <label>In-state tuition savings ($/yr)<input id="e_instate" type="number" min="0" step="1"></label>
+    <label>Financial aid ($/yr)<input id="e_aid" type="number" min="0" step="1"></label>
+    <label class="full">Award name<input id="e_n_award" type="text" maxlength="60"></label>
+    <label class="full">Scholarship name<input id="e_n_scholarship" type="text" maxlength="60"></label>
+    <label class="full">Financial aid name<input id="e_n_aid" type="text" maxlength="60"></label>
+    <label class="full" id="logoRow">Logo (PNG, JPG or SVG)<input id="e_logo" type="file" accept="image/*"></label>
+  </div>
+  <p class="hint" id="dHint">Use 0 for a perk you don't have. Amounts are per year.</p>
+  <div class="rowbtn"><button type="button" class="btn alt" id="dCancel">Cancel</button><button type="button" class="btn alt" id="dReset">Reset to default</button><button type="button" class="btn" id="dSave">Save</button></div>
+</form></dialog>
+
+<script>
+(function(){
+"use strict";
+var PERKS=[["award","Award"],["scholarship","Scholarship"],["instate","In-state tuition"],["aid","Financial aid"]];
+// Default data. Edit mode (or Claude) overrides any field per school in the shared database.
+var D=[
+ {id:"ball-state",logoUrl:"logos/logo-ball-state.png",name:"Ball State University",mono:"BSU",state:"Indiana",biz:"Miller College of Business",type:"Public",base:27496,year:"2026-27",status:"waiting",instate:18548,note:"Out-of-state tuition shown. Business adds $15 per credit."},
+ {id:"butler",logoUrl:"logos/logo-butler.png",name:"Butler University",mono:"BU",state:"Indiana",biz:"Lacy School of Business",type:"Private",base:50860,year:"2026-27 (confirm with Butler)",status:"admitted",scholarship:29000,names:{scholarship:"Butler scholarship"},note:"Renewal criteria matter. Decide before May 1."},
+ {id:"byu",logoUrl:"logos/logo-byu.png",name:"Brigham Young University",mono:"BYU",state:"Utah",biz:"Marriott School of Business",type:"Private (church-owned)",base:14192,year:"2026-27",status:"waiting",note:"Non-member rate shown. The church-member rate is $7,096."},
+ {id:"byu-idaho",logoUrl:"logos/logo-byu-idaho.png",name:"BYU-Idaho",mono:"BYU-I",state:"Idaho",biz:"College of Business & Communication",type:"Private (church-owned)",base:10176,year:"2026-27",status:"admitted",note:"Non-member rate shown. The church-member rate is $5,088."},
+ {id:"indiana-state",logoUrl:"logos/logo-indiana-state.png",name:"Indiana State University",mono:"ISU",state:"Indiana",biz:"Scott College of Business",type:"Public",base:23282,year:"2026-27",status:"admitted",instate:13304,note:"Out-of-state tuition shown."},
+ {id:"iu-bloomington",logoUrl:"logos/logo-iu-bloomington.png",name:"Indiana University Bloomington",mono:"IUB",state:"Indiana",biz:"Kelley School of Business",type:"Public",base:42730,year:"2026-27",status:"waiting",instate:30558,note:"Includes the $1,550 business differential."},
+ {id:"iu-indianapolis",logoUrl:"logos/logo-iu-indianapolis.png",name:"IU Indianapolis",mono:"IUI",state:"Indiana",biz:"Kelley School of Business Indianapolis",type:"Public",base:35743,year:"2026-27",status:"admitted",award:3000,instate:24805,names:{award:"Crimson Pride Award (renewable)"},note:"Includes the $1,420 business differential."},
+ {id:"ole-miss",logoUrl:"logos/logo-ole-miss.png",name:"University of Mississippi",mono:"OLE MISS",state:"Mississippi",biz:"School of Business Administration",type:"Public",base:31068,year:"2026-27",status:"admitted",note:"Out-of-state tuition."},
+ {id:"ohio-state",logoUrl:"logos/logo-ohio-state.png",name:"The Ohio State University",mono:"OSU",state:"Ohio",biz:"Max M. Fisher College of Business",type:"Public",base:43736,year:"2026-27",status:"needs",note:"Tuition and fees combined. Still needs official SAT scores to show as received."},
+ {id:"penn-state",logoUrl:"logos/logo-penn-state.png",name:"Penn State University Park",mono:"PSU",state:"Pennsylvania",biz:"Smeal College of Business",type:"Public",base:46356,year:"2027-28 (Fall 2027 rate)",status:"waiting",note:"Upper-division business majors pay more."},
+ {id:"purdue",logoUrl:"logos/logo-purdue.png",name:"Purdue University",mono:"PU",state:"Indiana",biz:"Mitch Daniels School of Business",type:"Public",base:28520,year:"2026-27",status:"needs",instate:18802,note:"Daniels program fee is extra. Portal shows a recommendation and test scores still open."},
+ {id:"suu",logoUrl:"logos/logo-suu.png",name:"Southern Utah University",mono:"SUU",state:"Utah",biz:"Dixie L. Leavitt School of Business",type:"Public",base:21550,year:"2026-27",status:"admitted",scholarship:14000,names:{scholarship:"Founders Scholarship ($7,000 per semester)"},note:"Scholarship details open about Nov 20 at suu.edu/finaid/scholarshipaccept.html."},
+ {id:"uiuc",logoUrl:"logos/logo-uiuc.png",name:"Univ. of Illinois Urbana-Champaign",mono:"UIUC",state:"Illinois",biz:"Gies College of Business",type:"Public",base:44340,year:"2026-27",status:"waiting",note:"Decision Jan 29, 2027."},
+ {id:"utah-state",logoUrl:"logos/logo-utah-state.png",name:"Utah State University",mono:"USU",state:"Utah",biz:"Jon M. Huntsman School of Business",type:"Public",base:25717,year:"2026-27",status:"admitted",note:"Out-of-state tuition. Read your decision letter for any scholarship."},
+ {id:"utah-tech",logoUrl:"logos/logo-utah-tech.png",name:"Utah Tech University",mono:"UT",state:"Utah",biz:"Business school name not confirmed",type:"Public",base:18576,year:"2026-27",status:"admitted",note:"Out-of-state tuition."},
+ {id:"utah",logoUrl:"logos/logo-utah.png",name:"University of Utah",mono:"U of U",state:"Utah",biz:"David Eccles School of Business",type:"Public",base:37034,year:"2026-27",status:"waiting",note:"Business rate, fees included."},
+ {id:"depaul",name:"DePaul University",mono:"DEPAUL",state:"Illinois",biz:"Driehaus College of Business",type:"Private",base:48180,year:"2026-27",status:"waiting",note:"Early Action. No decision yet."},
+ {id:"murray-state",name:"Murray State University",mono:"MSU",state:"Kentucky",biz:"Arthur J. Bauernfeind College of Business",type:"Public",base:11088,year:"2026-27",status:"admitted",scholarship:5000,names:{scholarship:"Provost Scholarship ($2,500 per semester)"},note:"Indiana regional rate. Presidential Fellowship application due Dec 1."}
+];
+var over={}; var view="cards"; var filter="all"; var sort="name"; var editing=false; var canEdit=false; var openPop=null; var assets=null; var dbc=null;
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function money(n){return "$"+Math.round(n).toLocaleString("en-US")}
+function merged(s){var o=over[s.id]||{};var r={};for(var k in s)r[k]=s[k];for(var k2 in o)if(o[k2]!==undefined&&o[k2]!==null)r[k2]=o[k2];
+  r.names=Object.assign({},s.names||{},o.names||{});return r}
+function amt(s,k){return Number(s[k])||0}
+function perksOf(s){return PERKS.filter(function(p){return amt(s,p[0])>0})}
+function net(s){var t=s.base;PERKS.forEach(function(p){t-=amt(s,p[0])});return Math.max(0,t)}
+var CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function dot(k){return '<i class="dot '+k+'">'+CHECK+'</i>'}
+var STATUS={admitted:"Admitted",waiting:"Waiting",needs:"Needs item"};
+function cardHTML(s,i){
+  var ps=perksOf(s), has=ps.length>0;
+  var logo=s.logoUrl?'<img src="'+esc(s.logoUrl)+'" alt="'+esc(s.name)+' logo">':'<span class="mono">'+esc(s.mono||"")+'</span>';
+  var badges=ps.map(function(p){return '<span title="'+p[1]+'">'+dot(p[0])+'</span>'}).join("");
+  var price;
+  if(has){
+    price='<div class="was cut" aria-label="Original price">'+money(s.base)+'</div>'+
+      ps.map(function(p){var nm=(s.names&&s.names[p[0]])||p[1];return '<div class="line">'+dot(p[0])+'<span class="l">'+esc(nm)+'</span><span class="a">&minus;'+money(amt(s,p[0]))+'</span></div>'}).join("")+
+      '<div class="total"><small>You pay</small><b>'+money(net(s))+'</b></div>';
+  }else{
+    price='<div class="was">'+money(s.base)+'</div>';
+  }
+  return '<article class="card" data-id="'+esc(s.id)+'">'+
+    '<div class="top"><button class="ibtn" aria-expanded="false" aria-label="About '+esc(s.name)+'" data-i="'+esc(s.id)+'">i</button><span class="num">'+String(i+1).padStart(2,"0")+'</span></div>'+
+    '<div class="logo">'+logo+'</div>'+
+    '<h2 class="name">'+esc(s.name)+'</h2>'+
+    '<div class="meta"><span class="pill '+esc(s.status)+'">'+(STATUS[s.status]||"")+'</span><span class="st">'+esc(s.state)+'</span></div>'+
+    '<div class="badges">'+badges+'</div>'+
+    '<div class="price">'+price+'<div class="yr">per year · tuition '+esc(s.year)+'</div></div>'+
+  '</article>';
+}
+function tableHTML(list){
+  function cell(s,k){var a=amt(s,k);return a>0?'<td class="r"><span class="pc">'+dot(k)+'&minus;'+money(a)+'</span></td>':'<td class="r none">&mdash;</td>'}
+  var rows=list.map(function(s,i){
+    var ps=perksOf(s), has=ps.length>0, sv=s.base-net(s);
+    var lg=s.logoUrl?'<img src="'+esc(s.logoUrl)+'" alt="">':'<b>'+esc(s.mono||"")+'</b>';
+    return '<tr data-id="'+esc(s.id)+'"><td class="none">'+String(i+1).padStart(2,"0")+'</td>'+
+      '<td><div class="sc"><span class="tlogo">'+lg+'</span><span>'+esc(s.name)+'</span></div></td>'+
+      '<td><span class="pill '+esc(s.status)+'">'+(STATUS[s.status]||"")+'</span></td>'+
+      '<td class="r was2'+(has?' cut':'')+'">'+money(s.base)+'</td>'+
+      cell(s,"award")+cell(s,"scholarship")+cell(s,"instate")+cell(s,"aid")+
+      '<td class="r">'+(sv>0?money(sv):'<span class="none">&mdash;</span>')+'</td>'+
+      '<td class="r pay">'+money(net(s))+'</td></tr>';
+  }).join("");
+  return '<table class="sheet"><thead><tr><th>#</th><th>School</th><th>Status</th><th class="r">Tuition / yr</th><th class="r">Award</th><th class="r">Scholarship</th><th class="r">In-state</th><th class="r">Aid</th><th class="r">Total off</th><th class="r">You pay / yr</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+function popHTML(s){
+  return '<dl class="pop" role="dialog" aria-label="About '+esc(s.name)+'"><dt>Business school</dt><dd>'+esc(s.biz)+'</dd><dt>State</dt><dd>'+esc(s.state)+'</dd><dt>Type</dt><dd>'+esc(s.type)+'</dd>'+(s.note?'<dt>Notes</dt><dd>'+esc(s.note)+'</dd>':'')+'</dl>';
+}
+function render(){
+  var all=D.map(merged);
+  var list=all.filter(function(s){return filter==="all"||(filter==="admitted"&&s.status==="admitted")||(filter==="perks"&&perksOf(s).length>0)});
+  list.sort(function(a,b){return sort==="net"?net(a)-net(b):a.name.localeCompare(b.name)});
+  var g=$("#grid");
+  var tb=$("#tbl"); var isT=view==="table";
+  g.hidden=isT; tb.hidden=!isT;
+  if(isT){ if(openPop)openPop=null; tb.innerHTML=list.length?tableHTML(list):'<div class="empty">Nothing matches this filter yet.</div>'; g.innerHTML=""; }
+  else{ g.innerHTML=list.length?list.map(cardHTML).join(""):'<div class="empty">Nothing matches this filter yet.</div>'; tb.innerHTML=""; }
+  $("#app").classList.toggle("editing",editing);
+  var adm=all.filter(function(s){return s.status==="admitted"}).length;
+  var pk=all.filter(function(s){return perksOf(s).length>0}).length;
+  var best=all.filter(function(s){return s.status==="admitted"}).sort(function(a,b){return net(a)-net(b)})[0];
+  $("#stats").innerHTML='<div class="stat"><b>'+all.length+'</b><span>Schools</span></div><div class="stat"><b>'+adm+'</b><span>Admitted</span></div><div class="stat"><b>'+pk+'</b><span>With perks</span></div>'+(best?'<div class="stat"><b>'+money(net(best))+'</b><span>Lowest admitted</span></div>':'');
+  if(openPop){var c=document.querySelector('.card[data-id="'+openPop+'"]');var s=all.find(function(x){return x.id===openPop});if(c&&s){c.insertAdjacentHTML("beforeend",popHTML(s));c.querySelector(".ibtn").setAttribute("aria-expanded","true")}}
+}
+document.addEventListener("click",function(e){
+  var t=e.target;
+  var ib=t.closest&&t.closest(".ibtn");
+  if(ib){e.stopPropagation();var id=ib.getAttribute("data-i");openPop=(openPop===id)?null:id;render();return}
+  var vb=t.closest&&t.closest("[data-v]");
+  if(vb){view=vb.getAttribute("data-v");document.querySelectorAll("[data-v]").forEach(function(b){b.setAttribute("aria-pressed",String(b===vb))});openPop=null;render();return}
+  var f=t.closest&&t.closest("[data-f]");
+  if(f){filter=f.getAttribute("data-f");document.querySelectorAll("[data-f]").forEach(function(b){b.setAttribute("aria-pressed",String(b===f))});openPop=null;render();return}
+  if(editing){var c=t.closest&&t.closest(".card, tr[data-id]");if(c&&!t.closest(".pop")){openEditor(c.getAttribute("data-id"));return}}
+  if(openPop&&!(t.closest&&t.closest(".pop"))){openPop=null;render()}
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&openPop){openPop=null;render()}});
+$("#sort").addEventListener("change",function(e){sort=e.target.value;render()});
+$("#editToggle").addEventListener("click",function(e){editing=!editing;e.currentTarget.setAttribute("aria-pressed",String(editing));openPop=null;render()});
+
+// ---- editing ----
+var cur=null, pendingLogo=null;
+function openEditor(id){
+  var base=D.find(function(x){return x.id===id}); if(!base)return; cur=id; pendingLogo=null;
+  var s=merged(base);
+  $("#dTitle").textContent=s.name;
+  $("#e_base").value=s.base; $("#e_status").value=s.status;
+  PERKS.forEach(function(p){$("#e_"+p[0]).value=amt(s,p[0])||0});
+  ["award","scholarship","aid"].forEach(function(k){$("#e_n_"+k).value=(s.names&&s.names[k])||""});
+  $("#e_logo").value=""; $("#logoRow").hidden=false;
+  $("#dHint").textContent="Use 0 for a perk you don't have. Amounts are per year.";
+  var d=$("#dlg"); if(d.showModal)d.showModal(); else d.setAttribute("open","");
+}
+function closeEd(){var d=$("#dlg");if(d.close)d.close();else d.removeAttribute("open")}
+$("#dCancel").addEventListener("click",closeEd);
+$("#dReset").addEventListener("click",async function(){
+  if(!cur)return;
+  try{ delete over[cur]; window.__persist(); closeEd(); render() }catch(err){ $("#dHint").textContent="Could not reset. You may not have edit access." }
+});
+$("#dSave").addEventListener("click",async function(){
+  if(!cur)return;
+  var data={base:Number($("#e_base").value)||0,status:$("#e_status").value,names:{}};
+  PERKS.forEach(function(p){data[p[0]]=Number($("#e_"+p[0]).value)||0});
+  ["award","scholarship","aid"].forEach(function(k){var v=$("#e_n_"+k).value.trim();if(v)data.names[k]=v});
+  var f=$("#e_logo").files&&$("#e_logo").files[0];
+  try{
+    if(f){data.logoUrl=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(r.result)};r.onerror=rej;r.readAsDataURL(f)})}
+    var prev=over[cur]||{}; var doc=Object.assign({},prev,data);
+    over[cur]=doc; window.__persist(); closeEd(); render();
+  }catch(err){ $("#dHint").textContent="Could not save: "+((err&&err.message)||"no edit access")+"." }
+});
+
+render();
+
+// ---- local edits: saved in this browser only. For permanent changes, edit the D array above. ----
+try{over=JSON.parse(localStorage.getItem("cc-over")||"{}")}catch(e){over={}}
+function persist(){try{localStorage.setItem("cc-over",JSON.stringify(over))}catch(e){}}
+canEdit=true; $("#editToggle").hidden=false; render();
+window.__persist=persist;
+})();
+</script>
+</body></html>
